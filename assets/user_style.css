@@ -1,0 +1,11 @@
+/* Light background */
+.stApp { background-color: #F0F2F6; color: #31333F; }
+
+/* Rounded modern buttons */
+.stButton>button { background-color: #2E66FF; color: white; border: none; border-radius: 25px; width: 100%; font-weight: bold; }
+
+/* Perfect Contrast for Light Theme Text Boxes */
+.stTextInput input { background-color: #FFFFFF !important; color: #000000 !important; border: 1px solid #CCCCCC !important; }
+
+/* Force max-width to look like a mobile app */
+.block-container { max-width: 450px; padding-top: 2rem; padding-bottom: 2rem; margin: auto; }

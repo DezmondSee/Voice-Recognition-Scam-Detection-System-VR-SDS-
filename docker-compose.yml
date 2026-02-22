@@ -1,0 +1,34 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: vrsds_db_container
+    restart: always
+    environment:
+      # These credentials must match your db_config.py
+      MYSQL_ROOT_PASSWORD: Wnq57177
+      MYSQL_DATABASE: vrsds_enterprise
+    ports:
+      - "3307:3306"
+    volumes:
+      # Link 1: Persistent storage on your laptop
+      - ./mysql_data:/var/lib/mysql
+      # Link 2: Auto-run your schema on first start
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/init.sql
+
+  admin_web:
+    build: .
+    container_name: vrsds_admin_web
+    ports:
+      - "8501:8501"
+    depends_on:
+      - db
+    command: streamlit run admin_app.py --server.port=8501 --server.address=0.0.0.0
+
+  user_app:
+    build: .
+    container_name: vrsds_user_app
+    ports:
+      - "8502:8502"
+    depends_on:
+      - db
+    command: streamlit run user_app.py --server.port=8502 --server.address=0.0.0.0

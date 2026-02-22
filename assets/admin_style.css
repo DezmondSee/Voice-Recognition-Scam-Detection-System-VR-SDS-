@@ -1,0 +1,8 @@
+/* Dark background */
+.stApp { background-color: #0E1117; color: #FAFAFA; }
+
+/* Blue enterprise buttons */
+.stButton>button { background-color: #1F77B4; color: white; border: none; border-radius: 5px; width: 100%; }
+
+/* Perfect Contrast for Dark Theme Text Boxes */
+.stTextInput input { background-color: #1A1C23 !important; color: #FFFFFF !important; border: 1px solid #4DA8DA !important; }
