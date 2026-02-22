@@ -19,11 +19,15 @@ def register_user(username, password, email, sec_question, sec_answer):
                        (username, password, email, sec_question, sec_answer.lower()))
         conn.commit()
         return True
-    except: return False
+    except Exception as e:
+        import streamlit as st
+        st.error(f"🚨 REAL DATABASE ERROR: {e}")  # This forces the real error onto the screen!
+        return False
     finally: conn.close()
 
 def get_security_question(username):
     conn = get_db_connection()
+    
     if not conn: return None
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT security_question FROM users WHERE username=%s", (username,))

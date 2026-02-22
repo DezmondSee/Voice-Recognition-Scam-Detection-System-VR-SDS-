@@ -29,7 +29,7 @@ services:
       MYSQL_ROOT_PASSWORD: Wnq57177
       MYSQL_DATABASE: vrsds_enterprise
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
