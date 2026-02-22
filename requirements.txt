@@ -1,7 +1,0 @@
-streamlit
-mysql-connector-python
-pandas
-numpy
-librosa
-joblib
-scikit-learn
