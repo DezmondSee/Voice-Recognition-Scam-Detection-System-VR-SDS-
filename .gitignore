@@ -24,7 +24,7 @@ env/
 .venv/
 
 # 4. Ignore Docker Database Storage (Prevents leaking user data)
-db_data/
+mysql_data/
 
 # 5. Ignore Environment Variables (Security best practice)
 .env

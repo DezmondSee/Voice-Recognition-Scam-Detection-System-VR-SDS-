@@ -8,7 +8,7 @@ def get_db_connection():
     while retries > 0:
         try:
             return mysql.connector.connect(
-                host=os.getenv("DB_HOST", "localhost"),
+                host=os.getenv("DB_HOST", "db"),
                 user=os.getenv("DB_USER", "root"),
                 password=os.getenv("DB_PASSWORD", "Wnq57177"),
                 database=os.getenv("DB_NAME", "vrsds_enterprise")

@@ -1,0 +1,15 @@
+# Ignore heavy datasets and models
+dataset/
+models/
+*.npy
+*.pkl
+*.wav
+
+# Ignore Python and Git cache
+__pycache__/
+*.pyc
+venv/
+.git/
+
+# ADD THIS LINE:
+mysql_data/

@@ -15,7 +15,7 @@ def render():
         c3.metric("Pending Reports", stats['reports'])
         st.subheader("Scam Trends")
         chart_data = admin_controller.get_scam_trend_data()
-        if not chart_data.empty: st.bar_chart(data=chart_data, x='date', y='scams_detected')
+        if not chart_data.empty: st.line_chart(data=chart_data, x='date', y='scams_detected')
         else: st.info("No scan data yet.")
 
     elif page == "👥 User Database":
