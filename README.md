@@ -1,7 +1,7 @@
 # 🛡️ Voice Recognition-Scam Detection System (VR-SDS)
 
 ### **👨‍💻 About the Developer**
-I am **Dezmond See**, a dedicated Information Technology student at **Universiti Utara Malaysia (UUM)**, specializing in **Software Development**. I have a deep interest in building secure, AI-driven solutions that protect users from digital threats. This project represents my Final Year Project (FYP) journey, where I combine full-stack development with real-time audio analytics to combat the growing issue of phone-based scams.
+I am **See Dez-Mond**, a dedicated Information Technology student at **Universiti Utara Malaysia (UUM)**, specializing in **Software Development**. I have a deep interest in building secure, AI-driven solutions that protect users from digital threats. This project represents my Final Year Project (FYP) journey, where I combine full-stack development with real-time audio analytics to combat the growing issue of phone-based scams.
 
 ### **🚀 Project Overview**
 The **VR-SDS** is an intelligent security ecosystem designed to identify and block fraudulent calls and messages before they can harm the user. Unlike traditional filters, this system uses **Voice Recognition** and **Natural Language Processing (NLP)** to analyze conversations in real-time, providing an active shield for digital communication.
