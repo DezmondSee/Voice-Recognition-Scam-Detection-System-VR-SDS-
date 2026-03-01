@@ -2,13 +2,13 @@ import streamlit as st
 import os
 import time
 from controllers import scan_controller, user_controller
-from realtime_processor import RealTimeScamDetector
+from services.realtime_processor import RealTimeScamDetector
 
 def render(user):
     st.sidebar.title(f"User: {user['username']}")
     menu = st.sidebar.radio("Menu", [
         "Dashboard", 
-        "Real-Time Call Shield", 
+        "Android Call Shield", # New Android-specific feature
         "Scan Audio", 
         "Scan Text", 
         "History", 
@@ -20,22 +20,32 @@ def render(user):
         st.title("User Dashboard")
         st.info("System Protected")
 
-    elif menu == "Real-Time Call Shield":
-        st.header("🛡️ VR-SDS Real-Time Call Shield")
+    elif menu == "Android Call Shield":
+        st.header("🛡️ VR-SDS Android Protection")
         
-        # Permission Gate
-        if "mic_permission" not in st.session_state:
-            st.session_state.mic_permission = False
+        # Android System Permission Gate
+        if "android_permission" not in st.session_state:
+            st.session_state.android_permission = False
 
-        if not st.session_state.mic_permission:
-            st.warning("Microphone Permission Required")
-            st.write("To protect you from scams in real-time, the system needs permission to analyze incoming call audio.")
-            if st.button("Grant Permission"):
-                st.session_state.mic_permission = True
+        if not st.session_state.android_permission:
+            st.warning("📱 Android System Permission Required")
+            st.write("To protect you from scams in real-time, VR-SDS must be set as your **Default Caller ID & Spam App**.")
+            
+            st.info("""
+            **Required Permissions:**
+            - 🎙️ Microphone (Capture Incoming Audio)
+            - 📞 Call Logs (Identify Caller)
+            - 📲 Overlay (Display Scam Alerts during calls)
+            """)
+            
+            if st.button("✅ Grant Android Permissions"):
+                st.session_state.android_permission = True
+                st.success("Permissions Granted. Android Shield Active.")
+                time.sleep(1)
                 st.rerun()
             return
 
-        # Monitoring Setup
+        # Monitoring Logic
         if "detector" not in st.session_state:
             st.session_state.detector = RealTimeScamDetector()
             st.session_state.is_monitoring = False
@@ -45,12 +55,12 @@ def render(user):
             st.session_state.last_res = (pred, conf)
 
         col1, col2 = st.columns(2)
-        if col1.button("🚀 Start Monitoring", disabled=st.session_state.is_monitoring):
+        if col1.button("🚀 Start Shield", disabled=st.session_state.is_monitoring):
             st.session_state.is_monitoring = True
             st.session_state.detector.start(update_ui)
             st.rerun()
 
-        if col2.button("🛑 Stop Monitoring", disabled=not st.session_state.is_monitoring):
+        if col2.button("🛑 Stop Shield", disabled=not st.session_state.is_monitoring):
             st.session_state.detector.stop()
             st.session_state.is_monitoring = False
             st.rerun()
@@ -61,16 +71,17 @@ def render(user):
             st.divider()
             if verdict == "SCAM":
                 st.error(f"🚨 ALERT: High Scam Probability Detected! ({conf}%)")
+                st.button("🚫 TERMINATE CALL", type="primary")
             elif verdict == "SAFE":
                 st.success(f"✅ Conversation appears Safe ({conf}%)")
             else:
-                st.info("🎤 Active Monitoring... Listening to segments.")
+                st.info("🎤 Active Monitoring... Analyzing incoming voice stream.")
             
-            time.sleep(1)
+            time.sleep(2)
             st.rerun()
 
     elif menu == "Scan Audio":
-        st.header("Analyze Audio")
+        st.header("Analyze Audio File")
         uploaded = st.file_uploader("Upload Audio", type=['wav', 'mp3'])
         if uploaded and st.button("Scan"):
             with open("temp.wav", "wb") as f: f.write(uploaded.getbuffer())
@@ -81,7 +92,7 @@ def render(user):
             if os.path.exists("temp.wav"): os.remove("temp.wav")
 
     elif menu == "Scan Text":
-        st.header("Scan Message Text")
+        st.header("Analyze Message Text")
         txt = st.text_area("Message Content")
         if st.button("Check"):
             res = scan_controller.process_text(user['user_id'], txt)
@@ -90,19 +101,18 @@ def render(user):
             else: st.success("✅ SAFE")
 
     elif menu == "History":
-        st.header("Scan History")
+        st.header("Detection History")
         st.dataframe(user_controller.get_history(user['user_id']))
 
     elif menu == "Trusted Contacts":
-        st.header("Trusted Contacts")
+        st.header("Manage Trusted Contacts")
         c1, c2 = st.columns(2)
         with c1:
             n, p = st.text_input("Name"), st.text_input("Phone")
             if st.button("Add"): 
                 user_controller.add_trusted_contact(user['user_id'], n, p)
                 st.success("Contact Added")
-        with c2: 
-            st.table(user_controller.get_trusted_contacts(user['user_id']))
+        with c2: st.table(user_controller.get_trusted_contacts(user['user_id']))
 
     elif menu == "Report Scam":
         st.header("Submit Scam Report")
