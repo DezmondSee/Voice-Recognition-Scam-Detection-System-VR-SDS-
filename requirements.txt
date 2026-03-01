@@ -5,3 +5,6 @@ numpy
 librosa
 joblib
 scikit-learn
+pyaudio
+sounddevice
+numpy
