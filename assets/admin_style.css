@@ -6,3 +6,25 @@
 
 /* Perfect Contrast for Dark Theme Text Boxes */
 .stTextInput input { background-color: #1A1C23 !important; color: #FFFFFF !important; border: 1px solid #4DA8DA !important; }
+
+/* Fix: Force all Streamlit labels and markdown to be dark grey/black */
+label[data-testid="stWidgetLabel"] p {
+    color: #31333F !important;
+    font-weight: 500;
+}
+
+.stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+    color: #31333F !important;
+}
+
+div[data-baseweb="tab-list"] button p {
+    color: #31333F !important;
+}
+
+.stTextInput input {
+    color: #31333F !important;
+}
+
+div[data-baseweb="select"] div {
+    color: #31333F !important;
+}

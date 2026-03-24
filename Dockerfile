@@ -2,24 +2,26 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# Install system dependencies for audio processing and MySQL
-RUN apt-get update && apt-get install -y \
+# 1. Install system dependencies for audio and MySQL
+RUN apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends --fix-missing \
     libsndfile1 \
     ffmpeg \
     default-libmysqlclient-dev \
     build-essential \
+    portaudio19-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
+# 2. Upgrade pip and install requirements with a higher timeout
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir --default-timeout=1000 -r requirements.txt
 
-# Copy all files (including the newly renamed 'assets' folder)
+# 3. Copy all files
 COPY . .
 
-# Expose ports
+# 4. Expose the port for the main portal
 EXPOSE 8501
-EXPOSE 8502
 
-# Default command (overridden by docker-compose)
-CMD ["streamlit", "run", "user_app.py", "--server.port=8502", "--server.address=0.0.0.0"]
+# Default command to run the unified portal
+CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]
