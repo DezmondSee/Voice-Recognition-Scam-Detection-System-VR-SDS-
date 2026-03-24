@@ -1,11 +1,162 @@
-/* Light background */
-.stApp { background-color: #F0F2F6; color: #31333F; }
+/* =========================================
+   VR-SDS SCANNER - FINAL GLASSMORPHISM CSS
+   ========================================= */
 
-/* Rounded modern buttons */
-.stButton>button { background-color: #2E66FF; color: white; border: none; border-radius: 25px; width: 100%; font-weight: bold; }
+/* 1. Global Background & Glass Container */
+.stApp {
+    background: linear-gradient(135deg, #d4e4ff 0%, #ffffff 100%) !important;
+}
 
-/* Perfect Contrast for Light Theme Text Boxes */
-.stTextInput input { background-color: #FFFFFF !important; color: #000000 !important; border: 1px solid #CCCCCC !important; }
+.block-container {
+    max-width: 450px !important;
+    background: rgba(255, 255, 255, 0.95) !important; 
+    backdrop-filter: blur(15px) !important;
+    border-radius: 30px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    padding: 2.5rem !important;
+    margin: auto !important;
+    margin-top: 2rem !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
+}
 
-/* Force max-width to look like a mobile app */
-.block-container { max-width: 450px; padding-top: 2rem; padding-bottom: 2rem; margin: auto; }
+/* 2. THE LABELS FIX */
+[data-testid="stWidgetLabel"] *, 
+label * {
+    color: #000000 !important;
+    background-color: transparent !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    visibility: visible !important;
+}
+
+/* 3. TABS VISIBILITY */
+div[data-baseweb="tab-list"] {
+    gap: 15px !important;
+    margin-bottom: 20px !important;
+}
+
+div[data-baseweb="tab-list"] button {
+    opacity: 1 !important;
+    background-color: transparent !important;
+}
+
+div[data-baseweb="tab-list"] p {
+    color: #666666 !important; 
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    opacity: 1 !important;
+}
+
+div[data-baseweb="tab-list"] button[aria-selected="true"] p {
+    color: #2E66FF !important; 
+}
+
+/* 4. STANDARD INPUT BOXES */
+.stTextInput input, .stTextArea textarea {
+    background-color: #F8F9FA !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    border: 1px solid #CCCCCC !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    padding: 10px !important;
+}
+
+/* 5. THE ULTIMATE DROPDOWN FIX */
+div[data-baseweb="select"] > div {
+    background-color: #F8F9FA !important;
+    border: 1px solid #CCCCCC !important;
+    border-radius: 12px !important;
+}
+
+div[data-baseweb="select"] * {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important; 
+    font-weight: 600 !important;
+}
+
+ul[data-baseweb="menu"],
+div[data-baseweb="popover"] {
+    background-color: #FFFFFF !important;
+}
+
+ul[data-baseweb="menu"] li,
+ul[data-baseweb="menu"] li * {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    background-color: transparent !important;
+}
+
+ul[data-baseweb="menu"] li:hover,
+ul[data-baseweb="menu"] li:hover * {
+    background-color: #2E66FF !important;
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* 6. NOTIFICATION BOXES */
+div[data-testid="stNotification"] {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 12px !important;
+    border-left: 5px solid #2E66FF !important; 
+}
+
+div[data-testid="stNotification"] * {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    font-weight: 600 !important;
+}
+
+/* 7. BUTTONS */
+.stButton>button {
+    background: #2E66FF !important;
+    color: white !important;
+    border-radius: 20px !important;
+    font-weight: bold !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.stButton>button * {
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+}
+
+.stButton>button:hover {
+    background: #1a4fd4 !important;
+    transform: translateY(-2px) !important;
+}
+
+/* 🔥 8. PREMIUM TABLE DESIGN FIX 🔥 */
+[data-testid="stTable"] table {
+    width: 100% !important;
+    background-color: transparent !important;
+    border-collapse: collapse !important;
+}
+
+[data-testid="stTable"] th {
+    background-color: transparent !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    padding: 12px 8px !important;
+    border-bottom: 3px solid #2E66FF !important; 
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
+[data-testid="stTable"] td {
+    color: #000000 !important;
+    font-weight: 500 !important;
+    padding: 12px 8px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important; 
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
+[data-testid="stTable"] th:first-child,
+[data-testid="stTable"] td:first-child {
+    display: none !important;
+}
