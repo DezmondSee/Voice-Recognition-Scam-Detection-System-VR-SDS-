@@ -4,7 +4,6 @@ import glob
 import pandas as pd
 import time
 from controllers import user_controller
-# ✅ FIX: Now importing both the Audio and Text real AI functions
 from services.ai_engine import analyze_audio_file, analyze_text_content
 from services.scan_service import save_scan_result
 
@@ -98,7 +97,7 @@ def render(user):
     # PAGE 2: ANDROID CALL SHIELD (WATCHER)
     # ==========================================
     elif st.session_state.active_page == "Android Call Shield":
-        st.markdown("<h2 style='color: #000000; font-weight: bold;'>🛡️ Android Call Shield</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='color: #000000; font-weight: bold;'>🛡️Call Shield</h2>", unsafe_allow_html=True)
         if 'shield_on' not in st.session_state: st.session_state.shield_on = False
         
         col1, col2 = st.columns(2)
@@ -122,17 +121,31 @@ def render(user):
                 
                 with st.status(f"🚨 CALL DETECTED ({latest_file}): Analyzing in Real-Time...", expanded=True):
                     results = analyze_audio_file(latest_file)
-                    if results["verdict"] == "SCAM":
-                        st.error(f"‼️ SCAM DETECTED: {results['scam_probability']}% Risk")
-                        st.info("🔍 **Reasoning:** Unusual pacing and red-flag keywords detected.")
-                    else:
-                        st.success(f"✅ CALL VERIFIED: Safe ({results['scam_probability']}%).")
                     
-                    # Save the actual dynamic filename to the database
-                    save_scan_result(user['user_id'], latest_file, results['scam_probability'], results['verdict'])
+                    if results.get("status") == "error":
+                        st.error(f"⚠️ Analysis failed: {results.get('error_message', 'Unknown error processing audio file')}")
+                    else:
+                        verdict = results.get("verdict")
+                        prob = results.get('scam_probability', 0)
+                        
+                        # --- UPDATED: 3-Tier UI Logic ---
+                        if verdict == "SCAM":
+                            st.error(f"‼️ SCAM DETECTED: {prob}% Risk")
+                            st.info("🔍 **Reasoning:** High-risk scam combinations and/or suspicious pacing detected.")
+                        elif verdict == "SUSPICIOUS":
+                            st.warning(f"⚠️ SUSPICIOUS CALL: {prob}% Risk")
+                            st.info("🔍 **Reasoning:** Potential threats identified. Proceed with caution.")
+                        else:
+                            st.success(f"✅ CALL VERIFIED: Safe ({prob}%).")
+                        
+                        # Save the actual dynamic filename to the database
+                        save_scan_result(user['user_id'], latest_file, prob, verdict)
                 
-                # Cleanup the specific file that was just scanned
-                os.remove(latest_file) 
+                # Safely wrap os.remove in a try/except in case the file is locked by the OS
+                try:
+                    os.remove(latest_file) 
+                except OSError as e:
+                    pass
             else:
                 time.sleep(1)
                 st.rerun()
@@ -154,33 +167,53 @@ def render(user):
                 with st.spinner("🧠 Hybrid AI analyzing..."):
                     results = analyze_audio_file(temp_path)
                 
-                if results["status"] == "success":
+                if results.get("status") == "success":
                     st.markdown("<style>[data-testid='stMetricValue']{font-size:24px!important;}</style>", unsafe_allow_html=True)
                     
-                    if results["verdict"] == "SCAM": st.error(f"🚨 SCAM DETECTED ({results['scam_probability']}%)")
-                    else: st.success(f"✅ SAFE ({results['scam_probability']}%)")
+                    verdict = results.get("verdict")
+                    prob = results.get('scam_probability', 0)
                     
+                    # --- UPDATED: 3-Tier UI Logic ---
+                    if verdict == "SCAM": 
+                        st.error(f"🚨 SCAM DETECTED ({prob}%)")
+                    elif verdict == "SUSPICIOUS":
+                        st.warning(f"⚠️ SUSPICIOUS ({prob}%)")
+                    else: 
+                        st.success(f"✅ SAFE ({prob}%)")
+                    
+                    # Layout metrics
                     c1, c2, c3 = st.columns([1.2, 1.2, 0.8])
-                    c1.metric("Speech Rate (BPM)", f"{results['acoustic_features']['speech_rate_bpm']}")
-                    c2.metric("Avg Pitch (Hz)", f"{results['acoustic_features']['average_pitch']}")
+                    c1.metric("Speech Rate (BPM)", f"{results.get('acoustic_features', {}).get('speech_rate_bpm', 0)}")
+                    c2.metric("Avg Pitch (Hz)", f"{results.get('acoustic_features', {}).get('average_pitch', 0)}")
                     
-                    red_flags = results['acoustic_features'].get('red_flags', [])
+                    red_flags = results.get('acoustic_features', {}).get('red_flags', [])
                     c3.metric("Red Flags", len(red_flags))
 
                     st.divider()
                     st.markdown("### 🧠 AI Analysis Logic")
                     explanation = f"""
                     The risk score is a result of our Hybrid Weighted Engine:
-                    1. **Acoustic Layer ({results['acoustic_features']['speech_rate_bpm']} BPM):** Identifies robotic or scripted pacing.
-                    2. **NLP Layer ({len(red_flags)} Flags):** Scans the transcript for clusters like *OTP, Verify,* or *Blocked*.
+                    1. **Acoustic Layer ({results.get('acoustic_features', {}).get('speech_rate_bpm', 0)} BPM):** Identifies robotic or scripted pacing.
+                    2. **NLP Layer ({len(red_flags)} Flags):** Scans the transcript using the Malaysian Risk Matrix.
                     
                     **Formula:** `(Acoustic Risk * 0.4) + (NLP Match Score * 0.6)`
                     """
                     st.info(explanation)
                     
+                    # Show NLP Entities to the Examiner
+                    nlp_entities = results.get('acoustic_features', {}).get('nlp_entities', [])
+                    if nlp_entities:
+                        st.info(f"🧠 **spaCy Extracted Entities:** {', '.join(nlp_entities)}")
+                    
                     if red_flags: st.warning(f"🚩 **Found Keywords:** {', '.join(red_flags)}")
-                    save_scan_result(user['user_id'], uploaded_file.name, results['scam_probability'], results['verdict'])
-                os.remove(temp_path)
+                    save_scan_result(user['user_id'], uploaded_file.name, prob, verdict)
+                else:
+                    st.error(f"⚠️ Analysis failed: {results.get('error_message')}")
+                
+                try:
+                    os.remove(temp_path)
+                except OSError:
+                    pass
 
     # ==========================================
     # PAGE 4: SCAN TEXT (REAL AI ENGINE INTEGRATION)
@@ -191,18 +224,32 @@ def render(user):
         
         if st.button("🔍 Run NLP AI Analysis", type="primary", use_container_width=True):
             if text_in:
-                # ✅ FIX: Now calling the real AI Engine trained on your dataset!
                 res = analyze_text_content(text_in)
                 st.divider()
-                if res["verdict"] == "SCAM":
-                    st.error(f"🚨 SCAM DETECTED ({res['score']}%)")
+                
+                verdict = res.get("verdict")
+                score = res.get("score", 0)
+                
+                # --- UPDATED: 3-Tier UI Logic ---
+                if verdict == "SCAM":
+                    st.error(f"🚨 SCAM DETECTED ({score}%)")
+                elif verdict == "SUSPICIOUS":
+                    st.warning(f"⚠️ SUSPICIOUS ({score}%)")
                 else:
-                    st.success(f"✅ SAFE ({res['score']}%)")
+                    st.success(f"✅ SAFE ({score}%)")
                 
                 st.markdown("### 🧠 NLP Analysis Logic")
-                st.info(f"Analysis identified {len(res['risk_keywords'])} high-risk keywords and {len(res['urgency_flags'])} urgency markers.")
-                if res['risk_keywords']:
+                st.info(f"Analysis identified {len(res.get('risk_keywords', []))} high-risk keywords and {len(res.get('urgency_flags', []))} urgency markers.")
+                
+                # Show NLP Entities to the Examiner
+                if res.get('nlp_entities'):
+                    st.info(f"🧠 **spaCy Extracted Entities:** {', '.join(res['nlp_entities'])}")
+                    
+                if res.get('risk_keywords'):
                     st.warning(f"🚩 **Flagged Content:** {', '.join(res['risk_keywords'])}")
+                
+                text_snippet = (text_in[:30] + '...') if len(text_in) > 30 else text_in
+                save_scan_result(user['user_id'], f"Text: {text_snippet}", score, verdict)
             else:
                 st.warning("⚠️ Please provide text to analyze.")
 
