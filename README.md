@@ -25,6 +25,7 @@ The **VR-SDS** is an intelligent security ecosystem designed to identify and blo
 ---
 
 ### **🔧 Installation & Setup Guide**
+All Model and Dataset must be trained By your Own.
 
 Follow these steps to set up the environment on your local machine:
 
@@ -39,3 +40,5 @@ Open your terminal and run:
 ```bash
 git clone -b version-1.2 [https://github.com/DezmondSee/Voice-Recognition-Scam-Detection-System-VR-SDS-.git](https://github.com/DezmondSee/Voice-Recognition-Scam-Detection-System-VR-SDS-.git)
 cd Voice-Recognition-Scam-Detection-System-VR-SDS-
+
+
